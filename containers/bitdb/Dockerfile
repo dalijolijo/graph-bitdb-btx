@@ -10,7 +10,7 @@ RUN \
 ENV APP_ROOT=/app
 RUN mkdir -p ${APP_ROOT}
 WORKDIR ${APP_ROOT}
-RUN git clone https://github.com/21centurymotorcompany/bitd.git
+RUN git clone https://github.com/dalijolijo/bitd-btx.git
 
 WORKDIR ${APP_ROOT}/bitd
 ADD ./containers/bitdb/config.js .
