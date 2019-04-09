@@ -1,34 +1,39 @@
 version: '2'
 
 services:
-  bitdb:
+  bitdb-btx:
     build:
       context: .
-      dockerfile: ./containers/bitdb/Dockerfile
+      dockerfile: "./containers/bitdb/Dockerfile.bitdb-btx"
+    image: bitd-btx
+    container_name: bitdb-btx
+    working_dir: "/bitdb"
+    command: bash -c "sleep 60 && npm start"
+    restart: always
     ports:
       - "5555:30303"
-    links:
-      - 'bch'
-      - 'mongodb'
+    depends_on:
+      - mongo
+      - bitcored
     stdin_open: true
     tty: true
 
-  bch:
-    build:
-      context: .
-      dockerfile: ./containers/bch/Dockerfile
-    command: /usr/bin/bitcoind --printtoconsole
-    volumes:
-      - './containers/bch/data:/root/.bitcoin'
+  bitcored:
+    image: dalijolijo/bitcored-bitdb
+    container_name: bitcored-bitdb
+    command: -rpcuser=root -rpcpassword=bitcore
+    restart: always
     ports:
-      - "5556:18332"
-      - "28332:28332"
+      - "8556:8556"
+      - "28556:28556"
+    volumes:
+      - ./containers/btx/data:/data 
     stdin_open: true
     tty: true
 
-  mongodb:
+  mongo:
     image: mongo:latest
-    container_name: mongodb
+    container_name: mongo
     environment:
       -  'MONGODB_USER=user'
       -  'MONGODB_PASS=password!'
@@ -42,7 +47,7 @@ services:
     image: mongo-express
     container_name: mongo-express
     links:
-      - 'mongodb:mongo'
+      - 'mongo:mongo'
     ports:
       - '8081:8081'
     environment:
